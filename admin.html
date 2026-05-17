@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Survei HIMAFOR FT-UMP</title>
+    <link rel="icon" type="image/png" href="LOGO HIMAFOR FT-UMP.png">
+    <link rel="apple-touch-icon" href="LOGO HIMAFOR FT-UMP.png">
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f1f3f4;
+            color: #202124;
+        }
+        header {
+            background: #1a73e8;
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .logo-header {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .logout-btn {
+            background: #d33b27;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .logout-btn:hover {
+            background: #b3261e;
+        }
+        main {
+            max-width: 980px;
+            margin: 24px auto;
+            padding: 0 16px 40px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 12px 28px rgba(60, 64, 67, 0.12);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            margin-top: 0;
+        }
+        .field-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d2d6dc;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 22px;
+            background: #1a73e8;
+            color: white;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #1558b0;
+        }
+        .question-card {
+            border: 1px solid #dfe1e5;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .question-header strong {
+            font-size: 1rem;
+        }
+        .option-list {
+            margin-top: 12px;
+            display: grid;
+            gap: 10px;
+        }
+        .option-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+        }
+        .small-button {
+            background: #e8eaed;
+            color: #202124;
+            padding: 10px 14px;
+        }
+        .small-button:hover {
+            background: #d2d6dc;
+        }
+        .result-block {
+            margin-bottom: 20px;
+            padding: 16px;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+        .result-block strong {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .response-item {
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="LOGO HIMAFOR FT-UMP.png" alt="Logo HIMAFOR" class="logo-header">
+            <h1>Admin Survei HIMAFOR FT-UMP</h1>
+        </div>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>Atur Survey</h2>
+            <div class="field-group">
+                <label for="surveyTitle">Judul Survey</label>
+                <input id="surveyTitle" type="text" placeholder="Masukkan judul survey" />
+            </div>
+            <div class="field-group">
+                <label for="surveyDescription">Deskripsi Survey</label>
+                <textarea id="surveyDescription" placeholder="Masukkan deskripsi singkat survey"></textarea>
+            </div>
+            <div class="button-row">
+                <button id="addQuestionBtn" type="button">Tambah Pertanyaan</button>
+                <button id="saveSurveyBtn" type="button">Simpan Survey</button>
+                <button id="loadSurveyBtn" type="button">Muat Survey</button>
+                <button id="clearResponsesBtn" type="button" class="small-button">Hapus Semua Jawaban</button>
+            </div>
+        </div>
+
+        <div id="questionList"></div>
+
+        <div class="card">
+            <h2>Hasil Jawaban</h2>
+            <div id="resultsContainer">
+                <p>Belum ada hasil. User belum mengisi survei atau survei belum dibuat.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check jika user belum login
+        if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
+            window.location.href = 'index.html';
+        }
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('adminLoggedIn');
+            window.location.href = 'index.html';
+        });
+
+        const surveyKey = 'himaforSurveyData';
+        const responseKey = 'himaforSurveyResponses';
+
+        let survey = { title: '', description: '', questions: [] };
+
+        const surveyTitleInput = document.getElementById('surveyTitle');
+        const surveyDescriptionInput = document.getElementById('surveyDescription');
+        const questionList = document.getElementById('questionList');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const addQuestionBtn = document.getElementById('addQuestionBtn');
+        const saveSurveyBtn = document.getElementById('saveSurveyBtn');
+        const loadSurveyBtn = document.getElementById('loadSurveyBtn');
+        const clearResponsesBtn = document.getElementById('clearResponsesBtn');
+
+        function loadSurvey() {
+            const saved = localStorage.getItem(surveyKey);
+            if (saved) {
+                survey = JSON.parse(saved);
+            } else {
+                survey = { title: '', description: '', questions: [] };
+            }
+            surveyTitleInput.value = survey.title || '';
+            surveyDescriptionInput.value = survey.description || '';
+            renderQuestionList();
+            renderResults();
+        }
+
+        function saveSurvey() {
+            survey.title = surveyTitleInput.value.trim();
+            survey.description = surveyDescriptionInput.value.trim();
+            localStorage.setItem(surveyKey, JSON.stringify(survey));
+            alert('Survey disimpan.');
+            renderQuestionList();
+            renderResults();
+        }
+
+        function addQuestion() {
+            survey.questions.push({
+                questionText: '',
+                type: 'radio',
+                options: ['', '']
+            });
+            renderQuestionList();
+        }
+
+        function deleteQuestion(index) {
+            survey.questions.splice(index, 1);
+            renderQuestionList();
+        }
+
+        function addOption(questionIndex) {
+            survey.questions[questionIndex].options.push('');
+            renderQuestionList();
+        }
+
+        function deleteOption(questionIndex, optionIndex) {
+            survey.questions[questionIndex].options.splice(optionIndex, 1);
+            renderQuestionList();
+        }
+
+        function renderQuestionList() {
+            questionList.innerHTML = '';
+            if (survey.questions.length === 0) {
+                const emptyCard = document.createElement('div');
+                emptyCard.className = 'card';
+                emptyCard.innerHTML = '<p>Belum ada pertanyaan. Tambahkan pertanyaan terlebih dahulu.</p>';
+                questionList.appendChild(emptyCard);
+                return;
+            }
+
+            survey.questions.forEach((question, qIndex) => {
+                const card = document.createElement('div');
+                card.className = 'card question-card';
+
+                const header = document.createElement('div');
+                header.className = 'question-header';
+                header.innerHTML = `<strong>Pertanyaan ${qIndex + 1}</strong>`;
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.className = 'small-button';
+                deleteBtn.textContent = 'Hapus';
+                deleteBtn.addEventListener('click', () => deleteQuestion(qIndex));
+                header.appendChild(deleteBtn);
+                card.appendChild(header);
+
+                const questionGroup = document.createElement('div');
+                questionGroup.className = 'field-group';
+                questionGroup.innerHTML = `
+                    <label>Pertanyaan</label>
+                    <input type="text" value="${question.questionText}" placeholder="Tulis pertanyaan..." />
+                `;
+                const questionInput = questionGroup.querySelector('input');
+                questionInput.addEventListener('input', event => {
+                    survey.questions[qIndex].questionText = event.target.value;
+                });
+                card.appendChild(questionGroup);
+
+                const typeGroup = document.createElement('div');
+                typeGroup.className = 'field-group';
+                typeGroup.innerHTML = `
+                    <label>Jenis Jawaban</label>
+                    <select>
+                        <option value="radio">Pilihan ganda</option>
+                        <option value="text">Jawaban teks</option>
+                    </select>
+                `;
+                const typeSelect = typeGroup.querySelector('select');
+                typeSelect.value = question.type;
+                typeSelect.addEventListener('change', event => {
+                    survey.questions[qIndex].type = event.target.value;
+                    if (event.target.value === 'text') {
+                        survey.questions[qIndex].options = [];
+                    } else if (survey.questions[qIndex].options.length === 0) {
+                        survey.questions[qIndex].options = ['', ''];
+                    }
+                    renderQuestionList();
+                });
+                card.appendChild(typeGroup);
+
+                if (question.type === 'radio') {
+                    const optionGroup = document.createElement('div');
+                    optionGroup.className = 'field-group';
+                    optionGroup.innerHTML = '<label>Opsi Jawaban</label>';
+                    const optionList = document.createElement('div');
+                    optionList.className = 'option-list';
+
+                    question.options.forEach((option, optIndex) => {
+                        const optionRow = document.createElement('div');
+                        optionRow.className = 'option-row';
+                        optionRow.innerHTML = `
+                            <input type="text" value="${option}" placeholder="Tulis pilihan..." />
+                            <button type="button" class="small-button">Hapus</button>
+                        `;
+                        const optionInput = optionRow.querySelector('input');
+                        const removeBtn = optionRow.querySelector('button');
+                        optionInput.addEventListener('input', event => {
+                            survey.questions[qIndex].options[optIndex] = event.target.value;
+                        });
+                        removeBtn.addEventListener('click', () => deleteOption(qIndex, optIndex));
+                        optionList.appendChild(optionRow);
+                    });
+
+                    optionGroup.appendChild(optionList);
+
+                    const addOptionButton = document.createElement('button');
+                    addOptionButton.type = 'button';
+                    addOptionButton.className = 'small-button';
+                    addOptionButton.textContent = 'Tambah Opsi';
+                    addOptionButton.addEventListener('click', () => addOption(qIndex));
+                    optionGroup.appendChild(addOptionButton);
+
+                    card.appendChild(optionGroup);
+                }
+
+                questionList.appendChild(card);
+            });
+        }
+
+        function renderResults() {
+            const responses = JSON.parse(localStorage.getItem(responseKey) || '[]');
+            resultsContainer.innerHTML = '';
+
+            if (!responses.length || survey.questions.length === 0) {
+                resultsContainer.innerHTML = '<p>Belum ada hasil. User belum mengisi survei atau survei belum dibuat.</p>';
+                return;
+            }
+
+            const summary = document.createElement('div');
+            summary.className = 'result-block';
+            summary.innerHTML = `<strong>Total responden:</strong> ${responses.length}`;
+            resultsContainer.appendChild(summary);
+
+            survey.questions.forEach((question, index) => {
+                const block = document.createElement('div');
+                block.className = 'result-block';
+                const title = document.createElement('strong');
+                title.textContent = `Pertanyaan ${index + 1}: ${question.questionText}`;
+                block.appendChild(title);
+
+                if (question.type === 'radio') {
+                    const counts = {};
+                    question.options.forEach(option => {
+                        const key = option || '(kosong)';
+                        counts[key] = 0;
+                    });
+
+                    responses.forEach(resp => {
+                        const answer = resp.answers[index] || '';
+                        if (counts[answer] !== undefined) {
+                            counts[answer] += 1;
+                        } else {
+                            counts[answer] = (counts[answer] || 0) + 1;
+                        }
+                    });
+
+                    Object.entries(counts).forEach(([option, count]) => {
+                        const item = document.createElement('div');
+                        item.textContent = `${option}: ${count} suara`;
+                        block.appendChild(item);
+                    });
+                } else {
+                    responses.forEach(resp => {
+                        const item = document.createElement('div');
+                        item.className = 'response-item';
+                        item.textContent = resp.answers[index] || '-';
+                        block.appendChild(item);
+                    });
+                }
+
+                resultsContainer.appendChild(block);
+            });
+        }
+
+        addQuestionBtn.addEventListener('click', addQuestion);
+        saveSurveyBtn.addEventListener('click', saveSurvey);
+        loadSurveyBtn.addEventListener('click', loadSurvey);
+        clearResponsesBtn.addEventListener('click', () => {
+            if (confirm('Hapus semua jawaban user?')) {
+                localStorage.removeItem(responseKey);
+                renderResults();
+            }
+        });
+
+        loadSurvey();
+    </script>
+</body>
+</html>

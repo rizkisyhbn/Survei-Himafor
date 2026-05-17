@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survei HIMAFOR FT-UMP</title>
+    <link rel="icon" type="image/png" href="LOGO HIMAFOR FT-UMP.png">
+    <link rel="apple-touch-icon" href="LOGO HIMAFOR FT-UMP.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        main {
+            max-width: 600px;
+            width: 100%;
+            padding: 0 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 60px 40px;
+            text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 28px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        h1 {
+            margin: 0 0 16px;
+            font-size: 2.2rem;
+            color: #1a202c;
+            font-weight: 700;
+        }
+
+        p {
+            color: #718096;
+            line-height: 1.8;
+            margin: 0 0 28px;
+            font-size: 1.05rem;
+        }
+
+        .button-group {
+            margin-top: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .link-button {
+            display: inline-block;
+            width: 100%;
+            max-width: 280px;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            cursor: pointer;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            text-align: center;
+        }
+
+        .link-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+        }
+
+        .link-button:active {
+            transform: translateY(-1px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 40px 32px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .modal-content h2 {
+            margin: 0 0 8px;
+            font-size: 1.6rem;
+            color: #1a202c;
+            font-weight: 700;
+        }
+
+        .modal-subtitle {
+            color: #718096;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+            font-size: 0.95rem;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            color: #2d3748;
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 28px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .error-message {
+            color: #d33b27;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 40px 24px;
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            .logo {
+                width: 120px;
+                height: 120px;
+            }
+
+            .modal-content {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="card">
+            <img src="LOGO HIMAFOR FT-UMP.png" alt="Logo HIMAFOR" class="logo">
+            <h1>Survei HIMAFOR FT-UMP</h1>
+            <p>Berikan suara Kalian dan bantu kami memahami kebutuhan Organisasi dengan lebih baik.</p>
+            <div class="button-group">
+                <a class="link-button" href="user.html">Mulai Survei</a>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <h2>🔐 Akses Admin</h2>
+            <p class="modal-subtitle">Masukkan password untuk mengakses panel admin</p>
+            <div class="field-group">
+                <label for="passwordInput">Password Admin</label>
+                <input type="password" id="passwordInput" placeholder="Masukkan password..." />
+                <div class="error-message" id="errorMessage"></div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" id="cancelBtn">Batal</button>
+                <button class="btn-primary" id="loginBtn">Masuk</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const passwordModal = document.getElementById('passwordModal');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const errorMessage = document.getElementById('errorMessage');
+
+        const ADMIN_PASSWORD = 'himafor123';
+
+        // Deteksi jika user menekan Ctrl+Shift+A untuk membuka modal admin
+        document.addEventListener('keydown', event => {
+            if (event.ctrlKey && event.shiftKey && event.key === 'A') {
+                event.preventDefault();
+                passwordModal.classList.add('show');
+                passwordInput.value = '';
+                errorMessage.textContent = '';
+                passwordInput.focus();
+            }
+        });
+
+        loginBtn.addEventListener('click', () => {
+            const enteredPassword = passwordInput.value;
+            if (enteredPassword === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                errorMessage.textContent = 'Password salah. Coba lagi.';
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            passwordModal.classList.remove('show');
+            passwordInput.value = '';
+            errorMessage.textContent = '';
+        });
+
+        passwordInput.addEventListener('keypress', event => {
+            if (event.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
+
+        // Tutup modal ketika klik di luar
+        passwordModal.addEventListener('click', event => {
+            if (event.target === passwordModal) {
+                passwordModal.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
