@@ -415,12 +415,43 @@
     <script>
         const surveyKey = 'himaforSurveyData';
         const responseKey = 'himaforSurveyResponses';
+        const draftKey = 'himaforSurveyDraft';
 
         const surveyTitleEl = document.getElementById('surveyTitle');
         const surveyDescriptionEl = document.getElementById('surveyDescription');
         const surveyForm = document.getElementById('surveyForm');
         const thankYouCard = document.getElementById('thankYouCard');
         const surveyCard = document.getElementById('surveyCard');
+
+        history.replaceState(null, '', location.href);
+        history.pushState(null, '', location.href);
+        window.addEventListener('popstate', () => {
+            history.pushState(null, '', location.href);
+        });
+
+        function saveDraft() {
+            const draft = {};
+            const formData = new FormData(surveyForm);
+            for (const [key, value] of formData.entries()) {
+                draft[key] = value;
+            }
+            localStorage.setItem(draftKey, JSON.stringify(draft));
+        }
+
+        function loadDraft() {
+            const draft = JSON.parse(localStorage.getItem(draftKey) || '{}');
+            if (!surveyForm) return;
+            Object.keys(draft).forEach(name => {
+                const fields = surveyForm.querySelectorAll(`[name="${name}"]`);
+                fields.forEach(field => {
+                    if (field.type === 'radio') {
+                        if (field.value === draft[name]) field.checked = true;
+                    } else {
+                        field.value = draft[name];
+                    }
+                });
+            });
+        }
 
         function loadSurvey() {
             const saved = localStorage.getItem(surveyKey);
@@ -485,7 +516,12 @@
                 submitButton.textContent = 'Kirim Jawaban';
                 surveyForm.appendChild(submitButton);
             }
+
+            loadDraft();
         }
+
+        surveyForm.addEventListener('input', saveDraft);
+        surveyForm.addEventListener('change', saveDraft);
 
         surveyForm.addEventListener('submit', event => {
             event.preventDefault();
@@ -502,6 +538,7 @@
                 answers
             });
             localStorage.setItem(responseKey, JSON.stringify(responses));
+            localStorage.removeItem(draftKey);
 
             surveyCard.classList.add('hidden');
             thankYouCard.classList.remove('hidden');
